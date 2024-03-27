@@ -1,0 +1,4 @@
+name: ZonsWhitelist
+version: '${version}'
+main: com.citizons.zonsdev.ZonsWhitelist
+api-version: '1.20'
