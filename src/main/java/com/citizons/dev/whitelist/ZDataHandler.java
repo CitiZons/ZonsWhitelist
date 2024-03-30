@@ -35,7 +35,7 @@ public class ZDataHandler {
     }
 
     public static void saveWhitelist() {
-        PluginMain.config.set("whitelisted-players", whitelistedPlayers.toString());
+        PluginMain.config.set("whitelisted-players", whitelistedPlayers);
         PluginMain.instance.saveConfig();
     }
 }

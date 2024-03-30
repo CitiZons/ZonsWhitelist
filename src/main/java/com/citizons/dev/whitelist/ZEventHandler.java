@@ -27,11 +27,9 @@ public final class ZEventHandler implements Listener {
             if (playerName != null &&
                     ZDataHandler.isPlayerCanJoin(playerUniqueID, playerName)) {
                 event.allow();
+                return;
             }
-        } else {
-            event.disallow(
-                    AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST,
-                    Component.text(message));
         }
+        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, Component.text(message));
     }
 }
