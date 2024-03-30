@@ -38,13 +38,10 @@ jobs:
     - name: Get Release Info
       id: get_info
       run: |
-        VERSION=`grep version build.gradle | grep '=' | grep -Eo \'.*\' | grep -Eo '[a-z|A-Z|0-9|.|_]*'`            NAME=`grep "rootProject.name" settings.gradle | grep -Eo \'.*\' | grep -Eo '[a-z|A-Z|0-9|.|_]*'`
+        VERSION=`grep version build.gradle | grep '=' | grep -Eo \'.*\' | grep -Eo '[a-z|A-Z|0-9|.|_|-]*'`
+        NAME=`grep "rootProject.name" settings.gradle | grep -Eo \'.*\' | grep -Eo '[a-z|A-Z|0-9|.|_|-]*'`
         FILE_PATH="./build/libs/"$NAME"-"$VERSION".jar"
         FILE_NAME=$NAME"-"$VERSION".jar"
-        VERSION=$VERSION.`git rev-parse --short HEAD`
-        echo ::set-output name=file_path::$FILE_PATH
-        echo ::set-output name=file_name::$FILE_NAME
-        echo ::set-output name=version::$VERSION
 
     # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
     # the publishing section of your build.gradle
@@ -72,6 +69,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{steps.get_info.outputs.file_path}}
+        asset_path: ${{ steps.get_info.outputs.file_path }}
         asset_name: ${{ github.ref }}.apk
         asset_content_type: application/java-archive
