@@ -1,0 +1,4 @@
+not-whitelisted-message: "You are not whitelisted."
+whitelisted-players: []
+blacklisted-players: []
+is-whitelist-enabled: true

@@ -1,4 +1,5 @@
 name: ZonsWhitelist
 version: '${version}'
-main: com.citizons.zonsdev.ZonsWhitelist
+main: com.citizons.dev.whitelist.PluginMain
 api-version: '1.20'
+author: ZonsDevGroup

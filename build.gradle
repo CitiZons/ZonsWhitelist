@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-group = 'com.citizons'
+group = 'com.citizons.dev.whitelist'
 version = '1.0-SNAPSHOT'
 
 repositories {
