@@ -10,11 +10,11 @@ on:
   workflow_dispatch:
     # Inputs the workflow accepts.
     inputs:
-      name:
+      tag:
         # Friendly description to be shown in the UI instead of 'name'
-        description: 'Person to greet'
+        description: 'tag to release'
         # Default value if no value is explicitly provided
-        default: 'World'
+        default: 'Debug-test'
         # Input has to be provided for the workflow to run
         required: true
         # The data type of the input
@@ -49,8 +49,19 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: ${{ tag }}
+        release_name: Release ${{ tag }}
         draft: false
         prerelease: false
         
+
+    - name: Upload Release Asset
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: app/build/libs/*.jar
+        asset_name: ${{ tag }}.apk
+        asset_content_type: application/java-archive
