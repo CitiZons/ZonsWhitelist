@@ -7,24 +7,25 @@ import org.bukkit.command.CommandSender;
 import java.util.Objects;
 import java.util.UUID;
 
-public class CommandHandler implements CommandExecutor {
+public class ZCommandHandler implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("zonsw")) {
-            if (Objects.equals(args[0], "add")) {
-                DataHandler.updateWhitelist(UUID.fromString(args[1].toLowerCase()));
+            if (args.length == 2 && Objects.equals(args[0], "add")) {
+                ZDataHandler.updateWhitelist(UUID.fromString(args[1].toLowerCase()));
+                ZDataHandler.saveWhitelist();
                 PluginMain.instance.getLogger().info(
                         String.format("Added UUID to whitelist: %s", args[1]));
                 sender.sendMessage("Successfully added UUID to whitelist");
+                return true;
             }
-            if(Objects.equals(args[0], "reload")) {
-                PluginMain.instance.getConfig();
+            if (args.length == 1 && Objects.equals(args[0], "reload")) {
                 PluginMain.instance.loadConfigs();
+                PluginMain.instance.getLogger().info("Reload complete");
+                return true;
             }
-            return true;
-        } else {
-            return false;
         }
+        return false;
     }
 }

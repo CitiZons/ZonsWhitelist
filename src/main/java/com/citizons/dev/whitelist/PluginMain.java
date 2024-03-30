@@ -17,8 +17,8 @@ public final class PluginMain extends JavaPlugin {
         // Plugin startup logic
         getLogger().info("Zons Whitelist is initializing.");
         saveDefaultConfig();
-        Bukkit.getPluginManager().registerEvents(new EventHandler(), this);
-        Objects.requireNonNull(this.getCommand("zonsw")).setExecutor(new CommandHandler());
+        Bukkit.getPluginManager().registerEvents(new ZEventHandler(), this);
+        Objects.requireNonNull(this.getCommand("zonsw")).setExecutor(new ZCommandHandler());
         instance = this;
         loadConfigs();
     }
@@ -31,14 +31,21 @@ public final class PluginMain extends JavaPlugin {
 
     public void loadConfigs() {
         config = getConfig();
-        DataHandler.updateWhitelistEnabled(
+        ZDataHandler.updateWhitelistEnabled(
                 config.getBoolean("is-whitelist-enabled", false));
         var whitelistedPlayers = config.getList("whitelisted-players");
         var blacklistedPlayers = config.getList("blacklisted-players");
         if (whitelistedPlayers != null) {
             for (Object whitelistedPlayer : whitelistedPlayers) {
-                DataHandler.updateWhitelist(
+                ZDataHandler.updateWhitelist(
                         UUID.fromString((String) whitelistedPlayer)
+                );
+            }
+        }
+        if (blacklistedPlayers != null) {
+            for (Object blacklistedPlayer : blacklistedPlayers) {
+                ZDataHandler.updateBlacklist(
+                        UUID.fromString((String) blacklistedPlayer)
                 );
             }
         }
