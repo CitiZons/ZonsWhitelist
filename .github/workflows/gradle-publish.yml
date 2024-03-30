@@ -62,7 +62,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        release_name: ${{ github.ref_name }}
         draft: false
         prerelease: false
 
@@ -74,5 +74,5 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ${{ steps.get_info.outputs.file_path }}
-        asset_name: ${{ github.ref }}.apk
+        asset_name: ZonsWhitelist-${{ github.ref_name }}.apk
         asset_content_type: application/java-archive
