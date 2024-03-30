@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class ZDataHandler {
-    private static final List<UUID> whitelistedPlayers = new ArrayList<>();
-    private static final List<UUID> blacklistedPlayers = new ArrayList<>();
+    private static final List<String> whitelistedPlayers = new ArrayList<>();
+    private static final List<String> blacklistedPlayers = new ArrayList<>();
     private static boolean isEnabledWhitelist = true;
 
     public static boolean isEnabled() {
@@ -18,20 +18,23 @@ public class ZDataHandler {
     }
 
     public static boolean isPlayerCanJoin(UUID UniqueID, String PlayerName) {
-        if (!whitelistedPlayers.contains(UniqueID))
+        String uuid = UniqueID.toString();
+        if (!whitelistedPlayers.contains(uuid))
             return false;
-        return !blacklistedPlayers.contains(UniqueID);
+        return !blacklistedPlayers.contains(uuid);
     }
 
     public static void updateWhitelist(UUID UniqueID) {
-        if (!whitelistedPlayers.contains(UniqueID))
-            whitelistedPlayers.add(UniqueID);
+        String uuid = UniqueID.toString();
+        if (!whitelistedPlayers.contains(uuid))
+            whitelistedPlayers.add(uuid);
     }
 
     public static void updateBlacklist(UUID UniqueID) {
-        if (!blacklistedPlayers.contains(UniqueID))
-            blacklistedPlayers.add(UniqueID);
-        whitelistedPlayers.remove(UniqueID);
+        String uuid = UniqueID.toString();
+        if (!blacklistedPlayers.contains(uuid))
+            blacklistedPlayers.add(uuid);
+        whitelistedPlayers.remove(uuid);
     }
 
     public static void saveWhitelist() {

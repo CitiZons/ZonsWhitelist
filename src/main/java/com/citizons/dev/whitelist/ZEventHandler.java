@@ -14,9 +14,9 @@ public final class ZEventHandler implements Listener {
     public void onProfileWhitelistVerify(AsyncPlayerPreLoginEvent event) {
         if (!ZDataHandler.isEnabled())
             return;
-        var playerName = event.getPlayerProfile().getName();
+        String playerName = event.getPlayerProfile().getName();
         UUID playerUniqueID = event.getPlayerProfile().getId();
-        var message = ChatColor.translateAlternateColorCodes(
+        String message = ChatColor.translateAlternateColorCodes(
                 '§', PluginMain.config
                         .getString("not-whitelisted-message",
                                 "You are not whitelisted."));
