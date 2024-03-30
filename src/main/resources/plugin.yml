@@ -3,3 +3,23 @@ version: '${version}'
 main: com.citizons.dev.whitelist.PluginMain
 api-version: '1.20'
 author: ZonsDevGroup
+commands:
+  zonsw:
+    description: "Zons Whitelist commands" #指令的注解
+    usage: /zonsw #指令的用法 当onCommand()方法返回false时提示这里的内容
+    # aliases: [d,de] #指令的多种形式 意为可以用 d, de 来触发/demo这个指令
+    permission: "zons.whitelist.use" #指令所需要的权限
+    permission-message: "You have no permission to use this command" #当输入者无上方权限时提示该信息
+
+permissions:
+  zons.*:
+    description: Gives access to all zons commands
+    children:  # 子权限节点
+      zons.whitelist: true
+  zons.whitelist:
+    description: Gives access to all zons whitelist commands
+    children:  # 子权限节点
+      zons.whitelist.use: true
+  zons.whitelist.use:
+    description: Allows you to use zons whitelist commands
+    default: op

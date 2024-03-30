@@ -19,10 +19,14 @@ public final class EventHandler implements Listener {
                 '§', PluginMain.config
                         .getString("not-whitelisted-message",
                                 "You are not whitelisted."));
-
-        if (playerName != null &&
-                DataHandler.isPlayerCanJoin(playerUniqueID, playerName)) {
-            event.allow();
+        if (playerUniqueID != null) {
+            PluginMain.instance.getLogger().info(
+                    String.format("Player join: %s - %s",
+                            playerName, playerUniqueID));
+            if (playerName != null &&
+                    DataHandler.isPlayerCanJoin(playerUniqueID, playerName)) {
+                event.allow();
+        }
         } else {
             event.disallow(
                     AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST,

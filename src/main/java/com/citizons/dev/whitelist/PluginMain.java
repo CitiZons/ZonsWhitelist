@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public final class PluginMain extends JavaPlugin {
@@ -17,8 +18,8 @@ public final class PluginMain extends JavaPlugin {
         getLogger().info("Zons Whitelist is initializing.");
         saveDefaultConfig();
         Bukkit.getPluginManager().registerEvents(new EventHandler(), this);
+        Objects.requireNonNull(this.getCommand("zonsw")).setExecutor(new CommandHandler());
         instance = this;
-        config = getConfig();
         loadConfigs();
     }
 
@@ -29,6 +30,7 @@ public final class PluginMain extends JavaPlugin {
     }
 
     public void loadConfigs() {
+        config = getConfig();
         DataHandler.updateWhitelistEnabled(
                 config.getBoolean("is-whitelist-enabled", false));
         var whitelistedPlayers = config.getList("whitelisted-players");
@@ -36,10 +38,7 @@ public final class PluginMain extends JavaPlugin {
         if (whitelistedPlayers != null) {
             for (Object whitelistedPlayer : whitelistedPlayers) {
                 DataHandler.updateWhitelist(
-                        UUID.nameUUIDFromBytes(
-                                new byte[]{
-                                        Byte.parseByte((String) whitelistedPlayer)}
-                        )
+                        UUID.fromString((String) whitelistedPlayer)
                 );
             }
         }
