@@ -1,6 +1,6 @@
 package com.citizons.dev.whitelist;
 
-import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,22 +14,23 @@ public final class ZEventHandler implements Listener {
     public void onProfileWhitelistVerify(AsyncPlayerPreLoginEvent event) {
         if (!ZDataHandler.isEnabled())
             return;
-        String playerName = event.getPlayerProfile().getName();
-        UUID playerUniqueID = event.getPlayerProfile().getId();
+        String playerName = event.getName();
+        UUID playerUniqueID = event.getUniqueId();
         String message = ChatColor.translateAlternateColorCodes(
                 '§', PluginMain.config
                         .getString("not-whitelisted-message",
                                 "You are not whitelisted."));
-        if (playerUniqueID != null) {
-            PluginMain.instance.getLogger().info(
-                    String.format("Player join: %s - %s",
-                            playerName, playerUniqueID));
-            if (playerName != null &&
-                    ZDataHandler.isPlayerCanJoin(playerUniqueID, playerName)) {
-                event.allow();
-                return;
-            }
+        PluginMain.instance.getLogger().info(
+                String.format("Player join: %s - %s",
+                        playerName, playerUniqueID));
+        if (ZDataHandler.isPlayerCanJoin(playerUniqueID, playerName)) {
+            event.allow();
+            return;
         }
-        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, Component.text(message));
+        Bukkit.broadcastMessage(
+                String.format(
+                        "Non-whitelisted player %s has been denied to join the server."
+                        , playerName));
+        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, message);
     }
 }
