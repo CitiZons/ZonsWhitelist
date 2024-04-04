@@ -25,20 +25,50 @@ public class ZDataHandler {
     }
 
     public static void updateWhitelist(UUID UniqueID) {
+        addWhitelist(UniqueID);
+    }
+
+    public static void updateWhitelist(UUID UniqueID, boolean Add) {
+        if (Add)
+            addWhitelist(UniqueID);
+        else
+            removeWhitelist(UniqueID);
+    }
+
+    public static void updateBlacklist(UUID UniqueID, boolean Add) {
+        String uuid = UniqueID.toString();
+        if (Add) {
+            if (!blacklistedPlayers.contains(uuid))
+                blacklistedPlayers.add(uuid);
+            whitelistedPlayers.remove(uuid);
+        } else {
+            blacklistedPlayers.remove(uuid);
+        }
+    }
+    public static void removeLists() {
+        whitelistedPlayers.clear();
+        blacklistedPlayers.clear();
+    }
+
+    private static void addWhitelist(UUID UniqueID) {
         String uuid = UniqueID.toString();
         if (!whitelistedPlayers.contains(uuid))
             whitelistedPlayers.add(uuid);
+        blacklistedPlayers.remove(uuid);
     }
 
-    public static void updateBlacklist(UUID UniqueID) {
+    private static void removeWhitelist(UUID UniqueID) {
         String uuid = UniqueID.toString();
-        if (!blacklistedPlayers.contains(uuid))
-            blacklistedPlayers.add(uuid);
         whitelistedPlayers.remove(uuid);
     }
 
     public static void saveWhitelist() {
         PluginMain.config.set("whitelisted-players", whitelistedPlayers);
+        PluginMain.instance.saveConfig();
+    }
+
+    public static void saveBlacklist() {
+        PluginMain.config.set("blacklisted-players", blacklistedPlayers);
         PluginMain.instance.saveConfig();
     }
 }

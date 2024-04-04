@@ -16,9 +16,7 @@ public final class PluginMain extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
         log = getLogger();
-        log.info("Zons Whitelist is initializing.");
         saveDefaultConfig();
         Bukkit.getPluginManager().registerEvents(new ZEventHandler(), this);
         Objects.requireNonNull(this.getCommand("zonsw")).setExecutor(new ZCommandHandler());
@@ -28,12 +26,13 @@ public final class PluginMain extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        getLogger().info("Disabling Zons Whitelist.");
+        getLogger().info("Saving configs before disable");
         saveConfig();
     }
 
     public void loadConfigs() {
         config = getConfig();
+        ZDataHandler.removeLists();
         ZDataHandler.updateWhitelistEnabled(
                 config.getBoolean("is-whitelist-enabled", false));
         var whitelistedPlayers = config.getList("whitelisted-players");
@@ -46,15 +45,20 @@ public final class PluginMain extends JavaPlugin {
                     );
                 } catch (Exception error) {
                     log.info(String.format(
-                            "load config failed due to %s", error.toString()));
+                            "load config failed due to %s", error));
                 }
             }
         }
         if (blacklistedPlayers != null) {
             for (Object blacklistedPlayer : blacklistedPlayers) {
-                ZDataHandler.updateBlacklist(
-                        UUID.fromString((String) blacklistedPlayer)
-                );
+                try {
+                    ZDataHandler.updateBlacklist(
+                            UUID.fromString((String) blacklistedPlayer), true
+                    );
+                } catch (Exception error) {
+                    log.info(String.format(
+                            "load config failed due to %s", error));
+                }
             }
         }
     }
