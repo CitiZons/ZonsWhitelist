@@ -64,6 +64,18 @@ public class ZCommandHandler implements CommandExecutor {
                         String.format("Deleted UUID from whitelist: %s", args[1]));
                 sender.sendMessage("Successfully deleted UUID from whitelist");
                 return true;
+            } else if (Objects.equals(args[0], "enable")) {
+                if (Objects.equals(args[1], "yes")) {
+                    ZDataHandler.updateWhitelistEnabled(true);
+                    log.info(String.format("Whitelist enabled - user %s", sender.getName()));
+                    sender.sendMessage("Whitelist enabled");
+                    return true;
+                } else if (Objects.equals(args[1], "no")) {
+                    ZDataHandler.updateWhitelistEnabled(false);
+                    log.info(String.format("Whitelist disabled - user %s", sender.getName()));
+                    sender.sendMessage("Whitelist disabled");
+                    return true;
+                }
             }
         } else if (args.length == 1 && Objects.equals(args[0], "reload")) {
             PluginMain.instance.loadConfigs();
