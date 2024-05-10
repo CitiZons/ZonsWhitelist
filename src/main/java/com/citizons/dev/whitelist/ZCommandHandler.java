@@ -10,79 +10,115 @@ import java.util.logging.Logger;
 
 public class ZCommandHandler implements CommandExecutor {
     static Logger log = PluginMain.log;
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!command.getName().equalsIgnoreCase("zonsw")) {
             return false;
         }
         if (args.length == 3) {
-            if (Objects.equals(args[0], "whitelist")) {
-                if (Objects.equals(args[1], "add")) {
+            if (Objects.equals(args[0].toLowerCase(), "whitelist")) {
+                if (Objects.equals(args[1].toLowerCase(), "add")) {
                     ZDataHandler.updateWhitelist(UUID.fromString(args[2].toLowerCase()));
                     ZDataHandler.saveWhitelist();
-                    log.info(
-                            String.format("Added UUID to whitelist: %s", args[2]));
+                    log.info(String.format("Added UUID to whitelist: %s", args[2]));
                     sender.sendMessage("Successfully added UUID to whitelist");
                     return true;
-                } else if (Objects.equals(args[1], "del")) {
+                }
+                if (Objects.equals(args[1].toLowerCase(), "del")) {
                     ZDataHandler.updateWhitelist(UUID.fromString(args[2].toLowerCase()), false);
                     ZDataHandler.saveWhitelist();
-                    log.info(
-                            String.format("Deleted UUID from whitelist: %s", args[2]));
+                    log.info(String.format("Deleted UUID from whitelist: %s", args[2]));
                     sender.sendMessage("Successfully deleted UUID from whitelist");
                     return true;
                 }
-            } else if (Objects.equals(args[0], "blacklist")) {
-                if (Objects.equals(args[1], "add")) {
+            }
+            if (Objects.equals(args[0].toLowerCase(), "blacklist")) {
+                if (Objects.equals(args[1].toLowerCase(), "add")) {
                     ZDataHandler.updateBlacklist(UUID.fromString(args[2].toLowerCase()), true);
                     ZDataHandler.saveBlacklist();
-                    log.info(
-                            String.format("Added UUID to blacklist: %s", args[2]));
+                    log.info(String.format("Added UUID to blacklist: %s", args[2]));
                     sender.sendMessage("Successfully added UUID to blacklist");
                     return true;
-                } else if (Objects.equals(args[1], "del")) {
+                }
+                if (Objects.equals(args[1].toLowerCase(), "del")) {
                     ZDataHandler.updateBlacklist(UUID.fromString(args[2].toLowerCase()), false);
                     ZDataHandler.saveBlacklist();
-                    log.info(
-                            String.format("Deleted UUID from blacklist: %s", args[2]));
+                    log.info(String.format("Deleted UUID from blacklist: %s", args[2]));
                     sender.sendMessage("Successfully deleted UUID from blacklist");
                     return true;
                 }
             }
-        } else if (args.length == 2) {
-            if (Objects.equals(args[0], "Add")) {
+        }
+        if (args.length == 2) {
+            if (Objects.equals(args[0].toLowerCase(), "add")) {
                 ZDataHandler.updateWhitelist(UUID.fromString(args[1].toLowerCase()));
                 ZDataHandler.saveWhitelist();
-                log.info(
-                        String.format("Added UUID to whitelist: %s", args[1]));
+                log.info(String.format("Added UUID to whitelist: %s", args[1]));
                 sender.sendMessage("Successfully added UUID to whitelist");
                 return true;
-            } else if (Objects.equals(args[0], "del")) {
+            }
+            if (Objects.equals(args[0].toLowerCase(), "del")) {
                 ZDataHandler.updateWhitelist(UUID.fromString(args[1].toLowerCase()), false);
                 ZDataHandler.saveWhitelist();
-                log.info(
-                        String.format("Deleted UUID from whitelist: %s", args[1]));
+                log.info(String.format("Deleted UUID from whitelist: %s", args[1]));
                 sender.sendMessage("Successfully deleted UUID from whitelist");
                 return true;
-            } else if (Objects.equals(args[0], "enable")) {
+            }
+            if (Objects.equals(args[0].toLowerCase(), "enable")) {
                 if (Objects.equals(args[1], "yes")) {
                     ZDataHandler.updateWhitelistEnabled(true);
                     log.info(String.format("Whitelist enabled - user %s", sender.getName()));
                     sender.sendMessage("Whitelist enabled");
                     return true;
-                } else if (Objects.equals(args[1], "no")) {
+                }
+                if (Objects.equals(args[1].toLowerCase(), "no")) {
                     ZDataHandler.updateWhitelistEnabled(false);
                     log.info(String.format("Whitelist disabled - user %s", sender.getName()));
                     sender.sendMessage("Whitelist disabled");
                     return true;
                 }
             }
-        } else if (args.length == 1 && Objects.equals(args[0], "reload")) {
-            PluginMain.instance.loadConfigs();
-            log.info("Reload complete");
-            sender.sendMessage("Reload config complete");
-            return true;
         }
+        if (args.length == 1) {
+            if (Objects.equals(args[0].toLowerCase(), "reload")) {
+                PluginMain.instance.loadConfigs();
+                log.info("Reload complete");
+                sender.sendMessage("Reload config complete");
+                return true;
+            }
+            if (Objects.equals(args[0].toLowerCase(), "list")) {
+                sender.sendMessage("Whitelisted players:");
+                for (String player : ZDataHandler.getWhitelistedPlayers()) {
+                    sender.sendMessage(player);
+                }
+                return true;
+            }
+            if (Objects.equals(args[0].toLowerCase(), "status")) {
+                if (ZDataHandler.isEnabled()) {
+                    sender.sendMessage("Whitelist is enabled");
+                } else {
+                    sender.sendMessage("Whitelist is disabled");
+                }
+                return true;
+            }
+            if (Objects.equals(args[0].toLowerCase(), "help")) {
+                sender.sendMessage("Commands:");
+                sender.sendMessage("/zonsw add <UUID>");
+                sender.sendMessage("/zonsw del <UUID>");
+                sender.sendMessage("/zonsw whitelist add <UUID>");
+                sender.sendMessage("/zonsw whitelist del <UUID>");
+                sender.sendMessage("/zonsw blacklist add <UUID>");
+                sender.sendMessage("/zonsw blacklist del <UUID>");
+                sender.sendMessage("/zonsw enable <yes/no>");
+                sender.sendMessage("/zonsw reload");
+                sender.sendMessage("/zonsw list");
+                sender.sendMessage("/zonsw status");
+                return true;
+            }
+        }
+        sender.sendMessage("You've provided invalid command");
+        sender.sendMessage("Use /zonsw help to see the list of commands");
         return false;
     }
 }

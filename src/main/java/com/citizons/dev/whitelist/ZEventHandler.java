@@ -7,8 +7,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public final class ZEventHandler implements Listener {
+    static Logger log = PluginMain.log;
 
     @EventHandler
     public void onProfileWhitelistVerify(AsyncPlayerPreLoginEvent event) {
@@ -19,18 +21,15 @@ public final class ZEventHandler implements Listener {
         String message = ChatColor.translateAlternateColorCodes(
                 '§', PluginMain.config
                         .getString("not-whitelisted-message",
-                                "You are not whitelisted."));
-        PluginMain.instance.getLogger().info(
-                String.format("Player join: %s - %s",
-                        playerName, playerUniqueID));
+                                "[ZonsW]You are not whitelisted."));
+        log.info(String.format("Player join: %s - %s", playerName, playerUniqueID));
         if (ZDataHandler.isPlayerCanJoin(playerUniqueID, playerName)) {
             event.allow();
             return;
         }
-        Bukkit.broadcastMessage(
-                String.format(
-                        "Non-whitelisted player %s has been denied to join the server."
-                        , playerName));
         event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, message);
+        log.info(String.format("Non-whitelisted player %s has been denied to join the server.", playerName));
+        log.info(String.format("Player UUID: %s", playerUniqueID));
+        log.info("Use /zonsw list to see the whitelisted players.");
     }
 }

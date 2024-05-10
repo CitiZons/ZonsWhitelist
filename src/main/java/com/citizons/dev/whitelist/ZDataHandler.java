@@ -45,9 +45,14 @@ public class ZDataHandler {
             blacklistedPlayers.remove(uuid);
         }
     }
+
     public static void removeLists() {
         whitelistedPlayers.clear();
         blacklistedPlayers.clear();
+    }
+
+    public static List<String> getWhitelistedPlayers() {
+        return whitelistedPlayers;
     }
 
     private static void addWhitelist(UUID UniqueID) {
