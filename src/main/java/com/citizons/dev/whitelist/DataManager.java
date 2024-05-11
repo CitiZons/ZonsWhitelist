@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class ZDataHandler {
+public class DataManager {
     private static final List<String> whitelistedPlayers = new ArrayList<>();
     private static final List<String> blacklistedPlayers = new ArrayList<>();
     private static boolean isEnabledWhitelist = true;
@@ -68,12 +68,12 @@ public class ZDataHandler {
     }
 
     public static void saveWhitelist() {
-        PluginMain.config.set("whitelisted-players", whitelistedPlayers);
-        PluginMain.instance.saveConfig();
+        ZonsWhitelist.config.set("whitelisted-players", whitelistedPlayers);
+        ZonsWhitelist.instance.saveConfig();
     }
 
     public static void saveBlacklist() {
-        PluginMain.config.set("blacklisted-players", blacklistedPlayers);
-        PluginMain.instance.saveConfig();
+        ZonsWhitelist.config.set("blacklisted-players", blacklistedPlayers);
+        ZonsWhitelist.instance.saveConfig();
     }
 }

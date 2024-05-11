@@ -8,9 +8,9 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-public final class PluginMain extends JavaPlugin {
+public final class ZonsWhitelist extends JavaPlugin {
 
-    static PluginMain instance = null;
+    static ZonsWhitelist instance = null;
     static FileConfiguration config = null;
     static Logger log = null;
 
@@ -18,8 +18,8 @@ public final class PluginMain extends JavaPlugin {
     public void onEnable() {
         log = getLogger();
         saveDefaultConfig();
-        Bukkit.getPluginManager().registerEvents(new ZEventHandler(), this);
-        Objects.requireNonNull(this.getCommand("zonsw")).setExecutor(new ZCommandHandler());
+        Bukkit.getPluginManager().registerEvents(new EventManager(), this);
+        Objects.requireNonNull(this.getCommand("zonsw")).setExecutor(new CommandManager());
         instance = this;
         loadConfigs();
     }
@@ -32,15 +32,15 @@ public final class PluginMain extends JavaPlugin {
 
     public void loadConfigs() {
         config = getConfig();
-        ZDataHandler.removeLists();
-        ZDataHandler.updateWhitelistEnabled(
+        DataManager.removeLists();
+        DataManager.updateWhitelistEnabled(
                 config.getBoolean("is-whitelist-enabled", false));
         var whitelistedPlayers = config.getList("whitelisted-players");
         var blacklistedPlayers = config.getList("blacklisted-players");
         if (whitelistedPlayers != null) {
             for (Object whitelistedPlayer : whitelistedPlayers) {
                 try {
-                    ZDataHandler.updateWhitelist(
+                    DataManager.updateWhitelist(
                             UUID.fromString((String) whitelistedPlayer)
                     );
                 } catch (Exception error) {
@@ -52,7 +52,7 @@ public final class PluginMain extends JavaPlugin {
         if (blacklistedPlayers != null) {
             for (Object blacklistedPlayer : blacklistedPlayers) {
                 try {
-                    ZDataHandler.updateBlacklist(
+                    DataManager.updateBlacklist(
                             UUID.fromString((String) blacklistedPlayer), true
                     );
                 } catch (Exception error) {

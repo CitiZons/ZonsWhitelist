@@ -1,6 +1,5 @@
 package com.citizons.dev.whitelist;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,21 +8,21 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-public final class ZEventHandler implements Listener {
-    static Logger log = PluginMain.log;
+public final class EventManager implements Listener {
+    static Logger log = ZonsWhitelist.log;
 
     @EventHandler
     public void onProfileWhitelistVerify(AsyncPlayerPreLoginEvent event) {
-        if (!ZDataHandler.isEnabled())
+        if (!DataManager.isEnabled())
             return;
         String playerName = event.getName();
         UUID playerUniqueID = event.getUniqueId();
         String message = ChatColor.translateAlternateColorCodes(
-                '§', PluginMain.config
+                '§', ZonsWhitelist.config
                         .getString("not-whitelisted-message",
                                 "[ZonsW]You are not whitelisted."));
         log.info(String.format("Player join: %s - %s", playerName, playerUniqueID));
-        if (ZDataHandler.isPlayerCanJoin(playerUniqueID, playerName)) {
+        if (DataManager.isPlayerCanJoin(playerUniqueID, playerName)) {
             event.allow();
             return;
         }
