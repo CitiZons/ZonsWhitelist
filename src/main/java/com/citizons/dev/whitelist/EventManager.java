@@ -20,8 +20,8 @@ public final class EventManager implements Listener {
     public void onProfileWhitelistVerify(AsyncPlayerPreLoginEvent event) {
         if (!plugin.dataMgr.isWhitelistEnabled())
             return;
-        String playerName = event.getName();
-        String playerUUID = event.getUniqueId().toString();
+        String playerName = event.getName().toLowerCase();
+        String playerUUID = event.getUniqueId().toString().toLowerCase();
         String message = ChatColor.translateAlternateColorCodes(
                 '§', plugin.dataMgr.getConfig()
                         .getString("not-whitelisted-message",
