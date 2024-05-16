@@ -15,4 +15,10 @@ A customized whitelist plugin for CitiZons servers.
 
  Waiting for implementation
 
+## Online authentication API
+
+| Path      | Method |Type| Content                             | Response      |
+|-----------|--------|--|-------------------------------------|---------------|
+| /register | POST   |application/json| {"authentication-code": "\<code\>"} | {"auth": "xx" |
+
 &copy; CitiZons 2024

@@ -2,3 +2,10 @@ not-whitelisted-message: "[ZonsW] You are not whitelisted."
 whitelisted-players: []
 is-whitelist-enabled: true
 is-username-enabled: false
+# Online authentications
+## All arguments cannot be modified in server console
+## Modify the configurations before you start the server
+## For api protocol, please visit https://github.com/CitiZons/ZonsWhitelist and see README
+enabled-network: false
+server-url: "https://user.citizons.com/api"
+authentication-code: "authentication"
