@@ -50,6 +50,10 @@ jobs:
         git tag -d nightly || true
         git push origin :refs/tags/nightly || true
 
+    - name: Delete Old Nightly Release
+      run: |
+        curl -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/${{ github.repository }}/releases/nightly || true
+
     - name: Create New Nightly Tag
       run: |
         git tag nightly
