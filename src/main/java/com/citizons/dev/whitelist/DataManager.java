@@ -1,79 +1,117 @@
 package com.citizons.dev.whitelist;
 
+import org.bukkit.configuration.file.FileConfiguration;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class DataManager {
-    private static final List<String> whitelistedPlayers = new ArrayList<>();
-    private static final List<String> blacklistedPlayers = new ArrayList<>();
-    private static boolean isEnabledWhitelist = true;
+    private final ZonsWhitelist plugin;
+    private final Logger logger;
+    private final FileConfiguration config;
+    private final List<String> whitelistedPlayers = new ArrayList<>();
+    private boolean isEnabledWhitelist = true;
+    private boolean isEnabledUsername = false;
 
-    public static boolean isEnabled() {
-        return isEnabledWhitelist;
-    }
-
-    public static void updateWhitelistEnabled(boolean IsEnabled) {
-        isEnabledWhitelist = IsEnabled;
-    }
-
-    public static boolean isPlayerCanJoin(UUID UniqueID, String PlayerName) {
-        String uuid = UniqueID.toString();
-        if (!whitelistedPlayers.contains(uuid))
-            return false;
-        return !blacklistedPlayers.contains(uuid);
-    }
-
-    public static void updateWhitelist(UUID UniqueID) {
-        addWhitelist(UniqueID);
-    }
-
-    public static void updateWhitelist(UUID UniqueID, boolean Add) {
-        if (Add)
-            addWhitelist(UniqueID);
-        else
-            removeWhitelist(UniqueID);
-    }
-
-    public static void updateBlacklist(UUID UniqueID, boolean Add) {
-        String uuid = UniqueID.toString();
-        if (Add) {
-            if (!blacklistedPlayers.contains(uuid))
-                blacklistedPlayers.add(uuid);
-            whitelistedPlayers.remove(uuid);
-        } else {
-            blacklistedPlayers.remove(uuid);
+    public DataManager(ZonsWhitelist instance) {
+        instance.saveDefaultConfig();
+        this.plugin = instance;
+        this.logger = instance.getLogger();
+        this.config = instance.getConfig();
+        var isLoadConfigSuc = this.loadConfigs();
+        if (!isLoadConfigSuc) {
+            this.logger.warning("Failed to load configs!");
         }
     }
 
-    public static void removeLists() {
-        whitelistedPlayers.clear();
-        blacklistedPlayers.clear();
+    public boolean loadConfigs() {
+        try {
+            this.removeLists();
+            this.isEnabledWhitelist = config.getBoolean("is-whitelist-enabled", true);
+            this.isEnabledUsername = config.getBoolean("is-username-enabled", false);
+            var whitelistedPlayers = config.getList("whitelisted-players");
+            if (whitelistedPlayers != null) {
+                for (var player : whitelistedPlayers) {
+                    if (!this.whitelistedPlayers.contains((String) player)) {
+                        this.whitelistedPlayers.add((String) player);
+                    }
+                }
+            }
+
+        }
+        catch (Exception error) {
+            return false;
+        }
+        return true;
     }
 
-    public static List<String> getWhitelistedPlayers() {
-        return whitelistedPlayers;
+    public boolean isWhitelistEnabled() {
+        return this.isEnabledWhitelist;
     }
 
-    private static void addWhitelist(UUID UniqueID) {
-        String uuid = UniqueID.toString();
-        if (!whitelistedPlayers.contains(uuid))
-            whitelistedPlayers.add(uuid);
-        blacklistedPlayers.remove(uuid);
+    public boolean isUsernameEnabled() {
+        return this.isEnabledUsername;
+    }
+    public void updateWhitelistEnabledStatus(boolean isEnabled) {
+        this.isEnabledWhitelist = isEnabled;
+    }
+    public boolean checkCredentialNotUUID(String credential) {
+        try {
+            var uuid = UUID.fromString(credential);
+            return false;
+        } catch (Exception error) {
+            return true;
+        }
     }
 
-    private static void removeWhitelist(UUID UniqueID) {
-        String uuid = UniqueID.toString();
-        whitelistedPlayers.remove(uuid);
+    public boolean checkPlayerCanJoin(String credential) {
+        if (!this.isUsernameEnabled()) {
+            if (checkCredentialNotUUID(credential))
+                return false;
+        }
+        return this.whitelistedPlayers.contains(credential);
     }
 
-    public static void saveWhitelist() {
-        ZonsWhitelist.config.set("whitelisted-players", whitelistedPlayers);
-        ZonsWhitelist.instance.saveConfig();
+    public boolean addWhitelistUser(String credential) {
+        if (!this.isUsernameEnabled()) {
+            if (checkCredentialNotUUID(credential))
+                return false;
+        }
+        if (!this.whitelistedPlayers.contains(credential))
+            this.whitelistedPlayers.add(credential);
+        return true;
     }
 
-    public static void saveBlacklist() {
-        ZonsWhitelist.config.set("blacklisted-players", blacklistedPlayers);
-        ZonsWhitelist.instance.saveConfig();
+    public boolean removeWhitelistUser(String credential) {
+        if (!this.isUsernameEnabled()) {
+            if (checkCredentialNotUUID(credential))
+                return false;
+        }
+        this.whitelistedPlayers.remove(credential);
+        return true;
+    }
+
+    public void removeLists() {
+        this.whitelistedPlayers.clear();
+    }
+
+    public List<String> getWhitelistedPlayers() {
+        return this.whitelistedPlayers;
+    }
+
+    public void saveWhitelist() {
+        this.config.set("whitelisted-players", this.whitelistedPlayers);
+        plugin.saveConfig();
+    }
+
+    public void saveConfig() {
+        logger.info("Saving configs...");
+        plugin.saveConfig();
+    }
+
+    public FileConfiguration getConfig() {
+        return this.config;
     }
 }

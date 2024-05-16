@@ -1,0 +1,90 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a package using Gradle and then publish it to GitHub packages when a release is created
+# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#Publishing-using-gradle
+
+name: Nightly Package
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+        settings-path: ${{ github.workspace }} # location for the settings.xml file
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
+
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    - name: Get Release Info
+      id: get_info
+      run: |
+        VERSION=`grep version build.gradle | grep '=' | grep -Eo \'.*\' | grep -Eo '[a-z|A-Z|0-9|.|_|-]*'`
+        NAME=`grep "rootProject.name" settings.gradle | grep -Eo \'.*\' | grep -Eo '[a-z|A-Z|0-9|.|_|-]*'`
+        FILE_PATH="./build/libs/"$NAME"-"$VERSION".jar"
+        FILE_NAME=$NAME"-"$VERSION".jar"
+        VERSION=$VERSION.`git rev-parse --short HEAD`
+        echo ::set-output name=file_path::$FILE_PATH
+        echo ::set-output name=file_name::$FILE_NAME
+        echo ::set-output name=version::$VERSION
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: ${{ github.ref_name }}
+        draft: false
+        prerelease: false
+
+
+    - name: Delete Old Nightly Tag
+      run: |
+        git tag -d nightly || true
+        git push origin :refs/tags/nightly || true
+
+    - name: Create New Nightly Tag
+      run: |
+        git tag nightly
+        git push origin nightly
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: nightly
+        release_name: Nightly Build
+        draft: false
+        prerelease: true
+
+    - name: Upload Release Asset
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ steps.get_info.outputs.file_path }}
+        asset_name: ZonsWhitelist-nightly.jar
+        asset_content_type: application/java-archive

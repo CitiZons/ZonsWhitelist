@@ -1,4 +1,4 @@
-not-whitelisted-message: "You are not whitelisted."
+not-whitelisted-message: "[ZonsW] You are not whitelisted."
 whitelisted-players: []
-blacklisted-players: []
 is-whitelist-enabled: true
+is-username-enabled: false

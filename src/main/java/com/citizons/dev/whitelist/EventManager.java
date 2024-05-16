@@ -5,30 +5,42 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
-import java.util.UUID;
 import java.util.logging.Logger;
 
 public final class EventManager implements Listener {
-    static Logger log = ZonsWhitelist.log;
+    private final Logger logger;
+    private final ZonsWhitelist plugin;
+
+    public EventManager(ZonsWhitelist instance) {
+        this.plugin = instance;
+        this.logger = instance.getLogger();
+    }
 
     @EventHandler
     public void onProfileWhitelistVerify(AsyncPlayerPreLoginEvent event) {
-        if (!DataManager.isEnabled())
+        if (!plugin.dataMgr.isWhitelistEnabled())
             return;
         String playerName = event.getName();
-        UUID playerUniqueID = event.getUniqueId();
+        String playerUUID = event.getUniqueId().toString();
         String message = ChatColor.translateAlternateColorCodes(
-                '§', ZonsWhitelist.config
+                '§', plugin.dataMgr.getConfig()
                         .getString("not-whitelisted-message",
-                                "[ZonsW]You are not whitelisted."));
-        log.info(String.format("Player join: %s - %s", playerName, playerUniqueID));
-        if (DataManager.isPlayerCanJoin(playerUniqueID, playerName)) {
+                                "[ZonsW] You are not whitelisted."));
+        logger.info(String.format("Player join: %s - %s", playerName, playerUUID));
+        if (plugin.dataMgr.checkPlayerCanJoin(playerUUID)) {
+            event.allow();
+            return;
+        } else if (plugin.dataMgr.checkPlayerCanJoin(playerName)) {
+            logger.warning(String.format(
+                    "Player %s join with Username verification, and which is not recommended!",
+                    playerName));
             event.allow();
             return;
         }
         event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, message);
-        log.info(String.format("Non-whitelisted player %s has been denied to join the server.", playerName));
-        log.info(String.format("Player UUID: %s", playerUniqueID));
-        log.info("Use /zonsw list to see the whitelisted players.");
+        logger.info(String.format(
+                "Non-whitelisted player %s - %s has been denied to join the server.",
+                playerName, playerUUID));
+        logger.info("Use /zonsw list to see the whitelisted players.");
     }
 }
