@@ -46,6 +46,8 @@ jobs:
         echo ::set-output name=version::$VERSION
 
     - name: Delete Old Nightly Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         gh release delete nightly || true
 
