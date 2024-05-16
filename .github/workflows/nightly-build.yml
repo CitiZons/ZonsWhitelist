@@ -51,9 +51,13 @@ jobs:
       run: |
         gh release delete nightly || true
 
-    - name: Update Nightly Tag
+    - name: Delete Nightly Tag
       run: |
         git tag -d nightly || true
+        git push origin :refs/tags/nightly || true
+
+    - name: Create Nightly Tag
+      run: |
         git tag nightly
         git push origin nightly
 
