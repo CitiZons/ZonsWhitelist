@@ -45,18 +45,6 @@ jobs:
         echo ::set-output name=file_name::$FILE_NAME
         echo ::set-output name=version::$VERSION
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: ${{ github.ref_name }}
-        draft: false
-        prerelease: false
-
-
     - name: Delete Old Nightly Tag
       run: |
         git tag -d nightly || true
