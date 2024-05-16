@@ -45,18 +45,13 @@ jobs:
         echo ::set-output name=file_name::$FILE_NAME
         echo ::set-output name=version::$VERSION
 
-    - name: Delete Old Nightly Release
+    - name: Delete Old Release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         gh release delete nightly || true
 
-    - name: Delete Old Nightly Tag
-      run: |
-        git tag -d nightly || true
-        git push origin :refs/tags/nightly || true
-
-    - name: Create New Nightly Tag
+    - name: Create Nightly Tag
       run: |
         git tag nightly
         git push origin nightly
