@@ -3,6 +3,8 @@ package com.citizons.dev.whitelist;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Objects;
+
 public final class ZonsWhitelist extends JavaPlugin {
     DataManager dataMgr = null;
     CommandManager cmdMgr = null;
@@ -15,7 +17,7 @@ public final class ZonsWhitelist extends JavaPlugin {
         this.cmdMgr = new CommandManager(this);
         this.eventMgr = new EventManager(this);
         Bukkit.getPluginManager().registerEvents(eventMgr, this);
-        this.getCommand("zonsw").setExecutor(cmdMgr);
+        Objects.requireNonNull(this.getCommand("zonsw")).setExecutor(cmdMgr);
     }
 
     @Override
