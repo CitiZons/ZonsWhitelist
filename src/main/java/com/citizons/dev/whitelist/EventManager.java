@@ -1,6 +1,7 @@
 package com.citizons.dev.whitelist;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -22,22 +23,26 @@ public final class EventManager implements Listener {
             return;
         String playerName = event.getName().toLowerCase();
         String playerUUID = event.getUniqueId().toString().toLowerCase();
-        String message = ChatColor.translateAlternateColorCodes(
-                '§', plugin.dataMgr.getConfig()
-                        .getString("not-whitelisted-message",
-                                "[ZonsW] You are not whitelisted."));
+        Component message = Component.text(
+                plugin.dataMgr.getConfig().getString(
+                        "not-whitelisted-message",
+                        "[ZonsW] You are not whitelisted."
+                ),
+                NamedTextColor.WHITE
+        );
         logger.info(String.format("Player join: %s - %s", playerName, playerUUID));
         if (plugin.dataMgr.checkPlayerCanJoin(playerUUID)) {
             event.allow();
             return;
-        } else if (plugin.dataMgr.checkPlayerCanJoin(playerName)) {
+        } else if (plugin.dataMgr.checkPlayerCanJoin(playerName) && plugin.dataMgr.isUsernameEnabled()) {
             logger.warning(String.format(
                     "Player %s join with Username verification, and which is not recommended!",
                     playerName));
             event.allow();
             return;
         }
-        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, message);
+        event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST);
+        event.kickMessage(message);
         logger.info(String.format(
                 "Non-whitelisted player %s - %s has been denied to join the server.",
                 playerName, playerUUID));

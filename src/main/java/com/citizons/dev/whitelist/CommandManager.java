@@ -30,7 +30,7 @@ public class CommandManager implements CommandExecutor {
                     sender.sendMessage("Successfully added UUID to whitelist");
                     return true;
                 }
-                if (Objects.equals(args[1].toLowerCase(), "del")) {
+                if (Objects.equals(args[1].toLowerCase(), "del") || Objects.equals(args[1].toLowerCase(), "delete")) {
                     this.plugin.dataMgr.removeWhitelistUser(args[2].toLowerCase());
                     this.plugin.dataMgr.saveWhitelist();
                     log.info(String.format("Deleted UUID from whitelist: %s", args[2]));
@@ -38,37 +38,57 @@ public class CommandManager implements CommandExecutor {
                     return true;
                 }
             }
-        }
-        if (args.length == 2) {
+        }if (args.length == 2) {
             if (Objects.equals(args[0].toLowerCase(), "add")) {
-                this.plugin.dataMgr.addWhitelistUser(args[1].toLowerCase());
-                this.plugin.dataMgr.saveWhitelist();
-                log.info(String.format("Added UUID to whitelist: %s", args[1]));
-                sender.sendMessage("Successfully added UUID to whitelist");
-                return true;
+                boolean saveResult = this.plugin.dataMgr.addWhitelistUser(args[1].toLowerCase());
+                if (saveResult) {
+                    boolean saveToFile = this.plugin.dataMgr.saveWhitelist();
+                    if (saveToFile) {
+                        log.info(String.format("Added UUID to whitelist: %s", args[1]));
+                        sender.sendMessage("Successfully added UUID to whitelist");
+                        return true;
+                    } else {
+                        sender.sendMessage("Failed to save whitelist to file");
+                        return false;
+                    }
+                } else {
+                    sender.sendMessage("Illegal user to add to whitelist");
+                    return false;
+                }
             }
-            if (Objects.equals(args[0].toLowerCase(), "del")) {
-                this.plugin.dataMgr.removeWhitelistUser(args[1].toLowerCase());
-                this.plugin.dataMgr.saveWhitelist();
-                log.info(String.format("Deleted UUID from whitelist: %s", args[1]));
-                sender.sendMessage("Successfully deleted UUID from whitelist");
-                return true;
+            if (Objects.equals(args[0].toLowerCase(), "del") || Objects.equals(args[0].toLowerCase(), "delete")) {
+                boolean removeResult = this.plugin.dataMgr.removeWhitelistUser(args[1].toLowerCase());
+                if (removeResult) {
+                    boolean saveToFile = this.plugin.dataMgr.saveWhitelist();
+                    if (saveToFile) {
+                        log.info(String.format("Deleted UUID from whitelist: %s", args[1]));
+                        sender.sendMessage("Successfully deleted UUID from whitelist");
+                        return true;
+                    } else {
+                        sender.sendMessage("Failed to save whitelist to file");
+                        return false;
+                    }
+                } else {
+                    sender.sendMessage("User not found in whitelist");
+                    return false;
+                }
             }
             if (Objects.equals(args[0].toLowerCase(), "enable")) {
-                if (Objects.equals(args[1], "yes")) {
+                if (Objects.equals(args[1].toLowerCase(), "yes")) {
                     this.plugin.dataMgr.updateWhitelistEnabledStatus(true);
                     log.info(String.format("Whitelist enabled - user %s", sender.getName()));
                     sender.sendMessage("Whitelist enabled");
                     return true;
                 }
                 if (Objects.equals(args[1].toLowerCase(), "no")) {
-                    this.plugin.dataMgr.updateWhitelistEnabledStatus(true);
+                    this.plugin.dataMgr.updateWhitelistEnabledStatus(false);
                     log.info(String.format("Whitelist disabled - user %s", sender.getName()));
                     sender.sendMessage("Whitelist disabled");
                     return true;
                 }
             }
         }
+
         if (args.length == 1) {
             if (Objects.equals(args[0].toLowerCase(), "reload")) {
                 plugin.dataMgr.loadConfigs();

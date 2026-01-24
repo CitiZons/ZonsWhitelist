@@ -59,7 +59,7 @@ public class DataManager {
     }
     public boolean checkCredentialNotUUID(String credential) {
         try {
-            var uuid = UUID.fromString(credential);
+            UUID.fromString(credential);
             return false;
         } catch (Exception error) {
             return true;
@@ -67,12 +67,20 @@ public class DataManager {
     }
 
     public boolean checkPlayerCanJoin(String credential) {
-        if (!this.isUsernameEnabled()) {
-            if (checkCredentialNotUUID(credential))
-                return false;
+        if (!this.isWhitelistEnabled()) {
+            return true;
         }
-        return this.whitelistedPlayers.contains(credential);
+        if (!this.isUsernameEnabled() && checkCredentialNotUUID(credential)) {
+            return false;
+        }
+        // 优先检查本地白名单
+        if (this.whitelistedPlayers.contains(credential)) {
+            return true;
+        }
+        // 如果不在本地白名单中，调用服务端验证
+        return plugin.netMgr.verifyPlayer(credential, credential);
     }
+
 
     public boolean addWhitelistUser(String credential) {
         if (!this.isUsernameEnabled()) {
@@ -101,9 +109,15 @@ public class DataManager {
         return this.whitelistedPlayers;
     }
 
-    public void saveWhitelist() {
-        this.config.set("whitelisted-players", this.whitelistedPlayers);
-        plugin.saveConfig();
+    public boolean saveWhitelist() {
+        try {
+            this.config.set("whitelisted-players", this.whitelistedPlayers);
+            plugin.saveConfig();
+            return true;
+        } catch (Exception error) {
+            logger.warning("Failed to save whitelist!");
+            return false;
+        }
     }
 
     public void saveConfig() {

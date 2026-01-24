@@ -16,6 +16,7 @@ public final class ZonsWhitelist extends JavaPlugin {
         this.dataMgr = new DataManager(this);
         this.cmdMgr = new CommandManager(this);
         this.eventMgr = new EventManager(this);
+        this.netMgr = new NetworkManager(this);
         Bukkit.getPluginManager().registerEvents(eventMgr, this);
         Objects.requireNonNull(this.getCommand("zonsw")).setExecutor(cmdMgr);
     }
