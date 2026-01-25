@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    implementation "io.papermc.paper:paper-api:1.21.7-R0.1-SNAPSHOT"
+    implementation "io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT"
     implementation 'com.google.code.gson:gson:2.8.9'
 }
 
@@ -59,11 +59,6 @@ publishing {
                 username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
                 password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
             }
-        }
-    }
-    publications {
-        gpr(MavenPublication) {
-            from(components.java)
         }
     }
 }
